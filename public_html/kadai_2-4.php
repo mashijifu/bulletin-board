@@ -5,26 +5,25 @@
 <title>sample</title>
 </head>
 <body>
-    <form action="kadai_2-3.php" method="post">
+    <form action="kadai_2-4.php" method="post">
         名前：<br />
-        <input type="text" name="name" size="30" value="" /><br />
+        <input type="text" name="name" size="30" value="" placeholder="名前" /><br />
         <br />
         コメント：<br />
-        <textarea type="text" name="comment" size="30" value="" ></textarea><br />
+        <textarea type="text" name="comment" size="30" value="" placeholder="コメント" ></textarea><br />
+        <br />
+        削除：<br />
+        <input type="number" name="delete" size="30" value="" placeholder="削除する番号" /><br />
         <br />
         <input type="submit" value="登録する" />
+        <input type="submit" value="削除する" />
     </form>
     <?php
         $name=$_POST['name'];
         $comment=$_POST['comment'];
-        $filename="kadai_2-3.txt";
+        $delete=$_POST['delete'];
+        $filename="kadai_2-4.txt";
 
-        // $fp=fopen($filename, 'a');
-        // $count = count(file($filename));
-        // $next = $count + 1;
-        // fwrite($fp, $next . "<>" . $name . "<>" . $comment . "<>" . date('Y-m-d') . PHP_EOL);
-        // fclose($fp);
-        
         // ファイルを全て配列に入れる
         if(file_exists($filename)){
             $text = file_get_contents($filename);
@@ -52,12 +51,6 @@
             echo "<br>";
         }
 
-        // // 取得したファイルデータ(配列)を全て表示する
-        // for($i=0; $i < count($ret_array); $i++) {
-        //     $text[$k]=explode("<>", $ret_array[$i]);
-        // // 配列を順番に表示する
-        //     echo($ret_array[$i] . "<br/>" );
-        // }
     ?>
 </body>
 </html>
