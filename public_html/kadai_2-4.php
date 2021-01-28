@@ -24,6 +24,29 @@
         $delete=$_POST['delete'];
         $filename="kadai_2-4.txt";
 
+        if(isset($delete)) {
+            $delete_text = file_get_contents($filename);
+            if(isset($delete)) {
+                $delete_text_rows = explode("\n", $delete_text);
+                $count = count($text_rows);
+        
+                foreach ($delete_text_rows as $delete_text_row) {
+                    if($delete_text_row === ""){
+                        continue;
+                    }
+                    $dret = explode("<>", $delete_text_row);
+                    if($delete == $dret[0]) {
+                        $dret[0]="";
+                        $dret[1]="";
+                        $dret[2]="";
+                        $dret[3]="";
+                    }
+                }
+
+            }
+        
+        }
+        
         // ファイルを全て配列に入れる
         if(file_exists($filename)){
             $text = file_get_contents($filename);
