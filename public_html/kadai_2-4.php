@@ -36,10 +36,8 @@
                     }
                     $dret = explode("<>", $delete_text_row);
                     if($delete == $dret[0]) {
-                        $dret[0]="";
-                        $dret[1]="";
-                        $dret[2]="";
-                        $dret[3]="";
+                        unset($delete_text_row);
+                        file_put_contents($filename, $delete_text_row);
                     }
                 }
 
@@ -47,31 +45,34 @@
         
         }
         
-        // ファイルを全て配列に入れる
-        if(file_exists($filename)){
-            $text = file_get_contents($filename);
-        }else{
-            $text = "";
-        }
-
-        $text_rows = explode("\n",$text);//改行で分解
-        $count = count($text_rows);//行数をカウント
-        $add_text = $count."<>".$name."<>".trim($comment)."<>".date('Y-m-d');//追加したい文章
-        // array_unshift($text_rows, $add_text);//配列の先頭に追加
-        array_push($text_rows, $add_text);
-        $write_text = implode("\n", $text_rows);//改行でくっつける
-        file_put_contents($filename, $write_text);
-
-        foreach ($text_rows as $text_row) {
-            if($text_row === ""){
-                continue;
+        if(isset($name) && isset($comment)) {
+            // ファイルを全て配列に入れる
+            if(file_exists($filename)){
+                $text = file_get_contents($filename);
+            }else{
+                $text = "";
             }
-            $ret = explode("<>", $text_row);
-            echo $ret[0];
-            echo $ret[1];
-            echo $ret[2];
-            echo $ret[3];
-            echo "<br>";
+    
+            $text_rows = explode("\n",$text);//改行で分解
+            $count = count($text_rows);//行数をカウント
+            $add_text = $count."<>".$name."<>".trim($comment)."<>".date('Y-m-d');//追加したい文章
+            // array_unshift($text_rows, $add_text);//配列の先頭に追加
+            array_push($text_rows, $add_text);
+            $write_text = implode("\n", $text_rows);//改行でくっつける
+            file_put_contents($filename, $write_text);
+    
+            foreach ($text_rows as $text_row) {
+                if($text_row === ""){
+                    continue;
+                }
+                $ret = explode("<>", $text_row);
+                echo $ret[0];
+                echo $ret[1];
+                echo $ret[2];
+                echo $ret[3];
+                echo "<br>";
+            }
+
         }
 
     ?>
