@@ -5,7 +5,7 @@
 <title>sample</title>
 </head>
 <body>
-    <form action="kadai_2-4.php" method="post">
+    <form action="kadai_2-5.php" method="post">
         名前：<br />
         <input type="text" name="name" size="30" value="" placeholder="名前" /><br />
         <br />
@@ -13,31 +13,36 @@
         <textarea type="text" name="comment" size="30" value="" placeholder="コメント" ></textarea><br />
         <br />
         削除：<br />
-        <input type="number" name="delete" size="30" value="" placeholder="削除する番号" /><br />
+        <input type="number" name="edit" size="30" value="" placeholder="編集する番号" /><br />
         <br />
         <input type="submit" value="登録する" />
-        <input type="submit" value="削除する" />
+        <input type="submit" value="編集する" />
     </form>
     <?php
 
-        $filename = "kadai_2-4.txt";
+        $filename = "kadai_2-5.txt";
 
-        if((isset($_POST["delete"])) && ($_POST["delete"] != "")) {
+        if((isset($_POST["edit"])) && ($_POST["edit"] != "")) {
 
-            $delete = $_POST['delete'];
+            $edit = $_POST['edit'];
 
             $fp = fopen($filename, "r");
             while (!feof($fp)){
-                $lines[] = fgets($fp);
+                $e_lines[] = fgets($fp);
             }
             fclose($fp);
 
             $fp = fopen($filename, "w");
-            foreach($lines as $line) {
-                $del = explode("<>",$line);
-                if($del[0] != $delete)
+            foreach($e_lines as $e_line) {
+                $edi = explode("<>",$e_line);
+                if($edi[0] == $edit)
                 {
-                    fwrite($fp, $line);
+                    $newname=$edi[1];
+                    $newcomment=$edi[2];
+                    var_dump($edi);
+                    fwrite($fp, $edit."<>".$newname."<>".trim($newcomment)."<>".date('Y-m-d'));
+                }else{
+                    fwrite($fp, $e_line);
                 }
             }
             fclose($fp);
@@ -46,7 +51,7 @@
         
         if((isset($_POST['name'])) && (isset($_POST['comment']))) {
 
-            if((($_POST['name']) != "") || (($_POST['comment']) != "")){
+            if(((($_POST['name']) != "") || (($_POST['comment']) != "")) && !isset($_POST['edit'])){
                 $name=$_POST['name'];
                 $comment=$_POST['comment'];
                 // ファイルを全て配列に入れる
