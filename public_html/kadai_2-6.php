@@ -15,7 +15,7 @@
 
             $name = $_POST['name'];
             $comment = $_POST['comment'];
-            $date = date("Y年m月d日 H時i分s秒");
+            $date = date("Y年m月d日 H時i分");
             $password=$_POST['passcode'];
 
 
@@ -74,20 +74,31 @@
 
             $Delpassword=$_POST['Delpasscode'] ;
             $delete=$_POST['deleteNo']; //$deleteの定義づけ
-            $delcon=file("kadai_2-6.txt"); //file関数で開くテキストファイルの指定
-            $fp=fopen("kadai_2-6.txt","w");//ファイル読み込み、中身を空にする
+            $delcons=file($filename); //file関数で開くテキストファイルの指定
+            $fp=fopen($filename,"w");//ファイル読み込み、中身を空にする
+            $id=1;
 
 
-            for($j=0; $j<count($delcon); $j++){ //ループ処理を行う
-            $deldata=explode("<>",$delcon[$j]); //カッコで抽出
+            foreach($delcons As $delcon){ //ループ処理を行う
+            $deldata=explode("<>", $delcon); //カッコで抽出
 
-
-            if($deldata[0] != $delete){ //削除番号と行番号が一致・不一致
-            fwrite($fp,$delcon[$j]); //行内容をファイルに書き込む
-
-            }else{
-            fwrite($fp, ""); //書き込まない（つまり削除）、行を詰める
+            if ($delete == $deldata[0]) {
+                // echo '<p>';
+                echo "削除されました";
+                // echo '<p>';
+            } else {
+                if ($deldata[0] > $delete) {
+                    $id = $deldata[0] - 1;
+                }
+                fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . PHP_EOL);
             }
+
+            // if($deldata[0] != $delete){ //削除番号と行番号が一致・不一致
+            // fwrite($fp,$delcon[$j]); //行内容をファイルに書き込む
+
+            // }else{
+            // fwrite($fp, ""); //書き込まない（つまり削除）、行を詰める
+            // }
             }
 
             fclose($fp); //ファイルを閉じる
@@ -100,7 +111,7 @@
         if (!empty($_POST['edit']) &&!empty($_POST['Editpasscode'])) {
 
             //入力データの受け取りを変数に代入
-            $Editpassword= $_POST['Editpasscode'];
+            $Editpassword = $_POST['Editpasscode'];
             $edit = $_POST['edit'];
 
             //読み込んだファイルの中身を配列に格納する
