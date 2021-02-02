@@ -55,7 +55,7 @@
             if ($edit_date[0] == $edit_number) {
 
                 //編集のフォームで送信された値で上書きする（$edit_numberが$numberと変わっている）
-                fwrite($fp, $edit_number. "<>" . $name . "<>" . $comment . "<>" . $date . "\n");
+                fwrite($fp, $edit_number. "<>" . $name . "<>" . $comment . "<>" . $date . "<>" . $edit_date[4] . "\n");
 
             } else {
                 fwrite($fp,$line);  //不一致なら書き込む
@@ -82,15 +82,22 @@
             foreach($delcons As $delcon){ //ループ処理を行う
             $deldata=explode("<>", $delcon); //カッコで抽出
 
-            if ($delete == $deldata[0]) {
+            var_dump($Delpassword);
+            var_dump($deldata[4]);
+
+            if (($delete == $deldata[0]) && ($Delpassword == $deldata[4])) {
                 // echo '<p>';
                 echo "削除されました";
+                $delflag=1;
                 // echo '<p>';
             } else {
-                if ($deldata[0] > $delete) {
+                if (($delflag) && ($deldata[0] > $delete)) {
                     $id = $deldata[0] - 1;
+                    fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . $deldata[4] . PHP_EOL);
+                }else{
+                    $id = $deldata[0];
+                    fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . $deldata[4] . PHP_EOL);
                 }
-                fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . PHP_EOL);
             }
 
             // if($deldata[0] != $delete){ //削除番号と行番号が一致・不一致
@@ -121,9 +128,9 @@
                 $editdata = explode("<>",$line);
 
                 //投稿番号と編集対象番号が一致したらその投稿の「名前」と「コメント」を取得
-                    if ($edit == $editdata[0]) {
+                if (($edit == $editdata[0]) && ($Editpassword == $editdata[4])) {
 
-                //投稿のそれぞれの値を取得し変数に代入
+                    //投稿のそれぞれの値を取得し変数に代入
                     $editnumber = $editdata[0];
                     $editname = $editdata[1];
                     $editcomment = $editdata[2];
