@@ -22,57 +22,57 @@
             //編集対象番号が入力されているなら
             if (empty($_POST['edit-number'])) {
             //ファイルの存在がある場合は投稿番号+1、なかったら1を指定する
-            if (file_exists($filename)) {
-            $number = count(file($filename)) + 1;
-            } else {
-            $number = 1;
-            }
+                if (file_exists($filename)) {
+                    $number = count(file($filename)) + 1;
+                } else {
+                    $number = 1;
+                }
 
 
 
-        $list = $number . "<>" . $name . "<>" . $comment . "<>" . $date."<>".$password."<>";  //投稿内容
+                $list = $number . "<>" . $name . "<>" . $comment . "<>" . $date."<>".$password."<>";  //投稿内容
 
 
-            //ファイルを追記保存モードで開く
-            $fp = fopen($filename,"a");
-            fwrite($fp,$list . "\n");
-            fclose($fp);
+                //ファイルを追記保存モードで開く
+                $fp = fopen($filename,"a");
+                fwrite($fp,$list . "\n");
+                fclose($fp);
 
 
 
 
                 //編集実行機能  つまり新規投稿と編集で分岐する
-        }else{
+            }else{
 
-            $edit_number = $_POST['edit-number']; //読み込んだファイルの中身を配列に格納する
-            $ret_array = file($filename);
-            $fp = fopen($filename,"w");     //ファイルを開き、中身を空に 
+                $edit_number = $_POST['edit-number']; //読み込んだファイルの中身を配列に格納する
+                $ret_array = file($filename);
+                $fp = fopen($filename,"w");     //ファイルを開き、中身を空に 
 
-            foreach ($ret_array as $line) {   //配列の数だけループ
-            $edit_date= explode("<>",$line);
+                foreach ($ret_array as $line) {   //配列の数だけループ
+                    $edit_date= explode("<>",$line);
 
-                //新稿番号と編集番号が一致・不一致で分ける
-            if ($edit_date[0] == $edit_number) {
+                        //新稿番号と編集番号が一致・不一致で分ける
+                    if ($edit_date[0] == $edit_number) {
 
-                //編集のフォームで送信された値で上書きする（$edit_numberが$numberと変わっている）
-                fwrite($fp, $edit_number. "<>" . $name . "<>" . $comment . "<>" . $date . "<>" . $edit_date[4] . "\n");
+                        //編集のフォームで送信された値で上書きする（$edit_numberが$numberと変わっている）
+                        fwrite($fp, $edit_number. "<>" . $name . "<>" . $comment . "<>" . $date . "<>" . $edit_date[4] . "\n");
 
-            } else {
-                fwrite($fp,$line);  //不一致なら書き込む
-            }
-            }
+                    } else {
+                        fwrite($fp,$line);  //不一致なら書き込む
+                    }
+                }
                 fclose($fp);
 
             }
-        }  
+        }
 
 
 
                             //削除機能
-        if(!empty($_POST['deleteNo']) && !empty($_POST['Delpasscode'])){  //DelpasswordがPOSTされていないなら、機能しない
+        if((!empty($_POST['deleteNo'])) && (!empty($_POST['Delpasscode']))){  //DelpasswordがPOSTされていないなら、機能しない
 
 
-            $Delpassword=$_POST['Delpasscode'] ;
+            $Delpassword=$_POST['Delpasscode'];
             $delete=$_POST['deleteNo']; //$deleteの定義づけ
             $delcons=file($filename); //file関数で開くテキストファイルの指定
             $fp=fopen($filename,"w");//ファイル読み込み、中身を空にする
@@ -80,35 +80,28 @@
 
 
             foreach($delcons As $delcon){ //ループ処理を行う
-            $deldata=explode("<>", $delcon); //カッコで抽出
+                $deldata=explode("<>", $delcon); //カッコで抽出
 
-            var_dump($Delpassword);
-            var_dump($deldata[4]);
-
-            if (($delete == $deldata[0]) && ($Delpassword == $deldata[4])) {
-                // echo '<p>';
-                echo "削除されました";
-                $delflag=1;
-                // echo '<p>';
-            } else {
-                if (($delflag) && ($deldata[0] > $delete)) {
-                    $id = $deldata[0] - 1;
-                    fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . $deldata[4] . PHP_EOL);
+                if(($delete == $deldata[0]) && (strcmp($Delpassword,$deldata[4]) == 0) {
+                    echo "削除されました";
+                    
                 }else{
-                    $id = $deldata[0];
+                    if ($deldata[0] > $delete) {
+                        $id = $deldata[0] - 1;
+                    }
                     fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . $deldata[4] . PHP_EOL);
+
+                    // if($deldata[0] != $delete){ //削除番号と行番号が一致・不一致
+                    // fwrite($fp,$delcon[$j]); //行内容をファイルに書き込む
+
+                    // }else{
+                    // fwrite($fp, ""); //書き込まない（つまり削除）、行を詰める
+                    // }
                 }
+
+                fclose($fp); //ファイルを閉じる
+
             }
-
-            // if($deldata[0] != $delete){ //削除番号と行番号が一致・不一致
-            // fwrite($fp,$delcon[$j]); //行内容をファイルに書き込む
-
-            // }else{
-            // fwrite($fp, ""); //書き込まない（つまり削除）、行を詰める
-            // }
-            }
-
-            fclose($fp); //ファイルを閉じる
         }
 
 
