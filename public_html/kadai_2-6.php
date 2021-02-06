@@ -74,24 +74,29 @@
             $delete=$_POST['deleteNo']; //$deleteの定義づけ
             $delcons=file($filename); //file関数で開くテキストファイルの指定
             $fp=fopen($filename,"w");//ファイル読み込み、中身を空にする
-        
-        
+            $count=0;
+            $flag=0;
+
             foreach($delcons As $delcon){ //ループ処理を行う
                 $deldata=explode("<>",$delcon); //カッコで抽出
-                echo $deldata[0];
-                if(($deldata[0] == $delete) && (strcmp($Delpassword, $deldata[4]) == 0)){ //削除番号と行番号が一致・不一致
-                    // fwrite($fp, ""); //書き込まない（つまり削除）、行を詰める
-                    echo "削除されました";
-            
-                }else{
-                    if($deldata[0] > $delete) {
-                        $id = $deldata[0] - 1;
+                $id=$deldata[0];
+                if(($delete > 0) && (strcmp($Delpassword, $deldata[4]) == 0)){ //削除番号と行番号が一致・不一致
+                    if($deldata[0] == $delete){
+                        // fwrite($fp, ""); //書き込まない（つまり削除）、行を詰める
+                        echo "<p>削除されました</p>";
+
+                    }else{
+                        if($deldata[0] > $delete) {
+                            $id = $deldata[0] - 1;
+                        }
+                    
+                        fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . $deldata[4] . PHP_EOL);
                     }
-                    if($deldata[0] == 0){
-                        $id=1;
-                    }
-                    fwrite($fp, $id . "<>" . $deldata[1] . "<>" . $deldata[2] . "<>" . $deldata[3] . "<>" . $deldata[4] . PHP_EOL);
+                    // $flag++;
+                    // echo "<p>$flag</p>";
                 }
+                // $count++;
+                // echo "<p>$count</p>";
             }
         
             fclose($fp); //ファイルを閉じる
