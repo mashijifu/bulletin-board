@@ -27,7 +27,7 @@
             $tb_name='keijiban';
 
             $sql= "CREATE TABLE IF NOT EXISTS $tb_name (
-            number INT AUTO_INCREMENT PRIMARY KEY,
+            id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(20),
             comment VARCHAR(200),
             post_date DATETIME,
@@ -75,26 +75,14 @@
                     $view_passcode = htmlspecialchars( $_POST['passcode'], ENT_QUOTES);
                 }
     
-                
-                //編集対象番号が入力されているなら
-                if (empty($_POST['edit-number'])) {
-                    //ファイルの存在がある場合は投稿番号+1、なかったら1を指定する
-                    // if($count) {
-                    //     $sql = "SELECT * FROM message";
-                    //     $sth = $pdo -> query($sql);
-                    //     $count = $sth -> rowCount();
-                    // } else {
-                    //     $number = 1;
-                    // }
+                    $id=NULL;
     
-                    
-                    $date = date("Y年m月d日 H時i分");
-    
-                    $sql = "INSERT INTO $tb_name (id,name,comment,post_date,password) VALUES (:id, :view_name, :view_comment, :date :view_passcode ";
+                    $sql = "INSERT INTO $tb_name (id,name,comment,post_date,password) VALUES (:id, :name, :comment, now(), :password)";
                     $stmt=$pdo->prepare($sql);
                     $stmt->bindValue( ':id', $id, PDO::PARAM_INT );
                     $stmt->bindValue( ':name', $view_name, PDO::PARAM_STR );
-                    $stmt->bindValue( ':message', $view_comment, PDO::PARAM_STR );
+                    $stmt->bindValue( ':comment', $view_comment, PDO::PARAM_STR );
+                    // $stmt->bindValue( ':date', $date, PDO::PARAM_STR );
                     $stmt->bindValue( ':password', $view_passcode, PDO::PARAM_STR );
                     $stmt->execute();
                     // $list = $number . "<>" . $name . "<>" . $comment . "<>" . $date."<>".$password."<>";  //投稿内容
@@ -115,7 +103,7 @@
     
     
     
-                }
+                // }
                     //編集実行機能  つまり新規投稿と編集で分岐する
                 // }else{
     
@@ -156,15 +144,15 @@
                 $stmt->execute();
     
                 foreach($stmt as $loop){
-                    if(($deleteNo==$loop['number'])&&($delete_pass==$loop['password'])){                
+                    if(($deleteNo==$loop['id'])&&($delete_pass==$loop['password'])){                
                         //DELETEの処理
-                        $sql="DELETE FROM $tb_name WHERE number=:number";
+                        $sql="DELETE FROM $tb_name WHERE id=:id";
                         $stmt=$pdo->prepare($sql);
-                        $stmt->bindValue(':number',$deleteNo,PDO::PARAM_INT);
+                        $stmt->bindValue(':id',$deleteNo,PDO::PARAM_INT);
                         $stmt->execute();
                         echo "メッセージを削除しました";
     
-                        $reset_num="SET @i=0; UPDATE $tb_name SET number=(@i:=@i+1)";
+                        $reset_num="SET @i = 0; UPDATE $tb_name SET id = (@i := @i+1)";
                         $stmt=$pdo->prepare($reset_num);
                         $stmt->execute();
                     }else{
@@ -181,79 +169,76 @@
             exit($e->getMessage());
         }
         
+        
+        //編集選択機能
+        // if (!empty($_POST['edit']) &&!empty($_POST['Editpasscode'])) {
 
+        //     //入力データの受け取りを変数に代入
+        //     $Editpassword = $_POST['Editpasscode'];
+        //     $edit = $_POST['edit'];
 
+        //     //読み込んだファイルの中身を配列に格納する
+        //     $editCon = file($filename);
 
+        //     foreach ($editCon as $line) {  
+        //         $editdata = explode("<>",$line);
 
-                //編集選択機能
-        if (!empty($_POST['edit']) &&!empty($_POST['Editpasscode'])) {
+        //         //投稿番号と編集対象番号が一致したらその投稿の「名前」と「コメント」を取得
+        //         if (($edit == $editdata[0]) && ($Editpassword == $editdata[4])) {
 
-            //入力データの受け取りを変数に代入
-            $Editpassword = $_POST['Editpasscode'];
-            $edit = $_POST['edit'];
+        //             //投稿のそれぞれの値を取得し変数に代入
+        //             $editnumber = $editdata[0];
+        //             $editname = $editdata[1];
+        //             $editcomment = $editdata[2];
 
-            //読み込んだファイルの中身を配列に格納する
-            $editCon = file($filename);
-
-            foreach ($editCon as $line) {  
-                $editdata = explode("<>",$line);
-
-                //投稿番号と編集対象番号が一致したらその投稿の「名前」と「コメント」を取得
-                if (($edit == $editdata[0]) && ($Editpassword == $editdata[4])) {
-
-                    //投稿のそれぞれの値を取得し変数に代入
-                    $editnumber = $editdata[0];
-                    $editname = $editdata[1];
-                    $editcomment = $editdata[2];
-
-                //既存の投稿フォームに、上記で取得した「名前」と「コメント」の内容が既に入っている状態で表示させる
-                //formのvalue属性で対応
-                }
-            }
-        }
+        //         //既存の投稿フォームに、上記で取得した「名前」と「コメント」の内容が既に入っている状態で表示させる
+        //         //formのvalue属性で対応
+        //         }
+        //     }
+        // }
     ?>
 
 
 
 
-    <form action="kadai_2-6-index.php" method="post">
-    <input type="text" name="name" placeholder="名前" value="<?php if(isset($editname)) {echo $editname;} ?>"><br>
-    <input type="text" name="comment" placeholder="コメント" value="<?php if(isset($editcomment)) {echo $editcomment;} ?>">
-    <input type="hidden" name="edit-number" value="<?php if(isset($editnumber)) {echo $editnumber;} ?>">
-    <input id="password" type="password" name="passcode" value="<?php if(isset($editpassword)) {echo $editpassword;} ?>" placeholder="パスワードを入力してください">
-    <input type="submit" name="btn_submit" value="送信">
+    <form action="kadai_2-index.php" method="post">
+        <input type="text" name="name" placeholder="名前" value="<?php if(isset($editname)) {echo $editname;} ?>"><br>
+        <input type="text" name="comment" placeholder="コメント" value="<?php if(isset($editcomment)) {echo $editcomment;} ?>">
+        <!-- <input type="hidden" name="edit-number" value="<?php if(isset($editnumber)) {echo $editnumber;} ?>"> -->
+        <input id="password" type="password" name="passcode" value="<?php if(isset($editpassword)) {echo $editpassword;} ?>" placeholder="パスワードを入力してください">
+        <input type="submit" name="btn_submit" value="送信">
     </form>
 
 
-    <form action="kadai_2-6-index.php" method="post">
-    <input type="text" name="deleteNo" placeholder="削除対象番号">
-    <input id="password" type="password" name="Delpasscode"  value="" placeholder="パスワードを入力してください">
-    <input type="submit" name="btn_delete" value="削除">
+    <form action="kadai_2-index.php" method="post">
+        <input type="text" name="deleteNo" placeholder="削除対象番号">
+        <input id="password" type="password" name="Delpasscode"  value="" placeholder="パスワードを入力してください">
+        <input type="submit" name="btn_delete" value="削除">
     </form>
 
-    <form action="kadai_2-6-edit.php" method="post">
-    <input type="text" name="edit" placeholder="編集対象番号">
-    <input id="password" type="password" name="Editpasscode"  value="" placeholder="パスワードを入力してください">
-    <input type="submit" value="編集">
+    <form action="kadai_2-edit.php" method="post">
+        <input type="text" name="editNo" placeholder="編集対象番号">
+        <input id="password" type="password" name="Editpasscode"  value="" placeholder="パスワードを入力してください">
+        <a href="kadai_2-6-edit.php"><input type="submit" name="btn_edit" value="編集"></a>
     </form>
 
 
 
     <?php      
 
+        $stmt=$pdo->prepare("SELECT * FROM $tb_name");
+        $stmt->execute();
 
-                        //表示機能
-        $filename = "kadai_2-6.txt";
-        if (file_exists($filename)) { 
-            $array = file($filename); //読み込んだファイルの中身を配列に格納する
-
-
-            foreach ($array as $word) { //取得したファイルデータを全てループ処理で表示する
-            $getdata = explode("<>",$word);  //explode関数でそれぞれの値を取得
-            echo $getdata[0] . " " . $getdata[1] . " " . $getdata[2] . " " . $getdata[3] . $getdata[4] . " " ."<br>"; //取得した値を表示する
+        //表示機能
+        if ($stmt) { 
+    
+            foreach($stmt as $loop){ //取得したデータを全てループ処理で表示する
+                echo $loop['id'] . " " . $loop['name'] . " " . $loop['comment'] . " " . $loop['post_date'] . " " . $loop['password'] ."<br>"; //取得した値を表示する
             }
         }
 
+        //接続を閉じる
+        $pdo = null;
 
     ?>
 
