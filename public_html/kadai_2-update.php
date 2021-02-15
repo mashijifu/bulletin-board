@@ -19,9 +19,9 @@ try {
 
     $tb_name='keijiban';
 
-    $stmt = $dbh->prepare('UPDATE users SET name = :name, comment = :comment WHERE id = :id');
+    $stmt = $pdo->prepare("UPDATE $tb_name SET name = :name, comment = :comment WHERE id = :id");
 
-    $stmt->execute(array(':name' => $_POST['name'], ':message' => $_POST['message'], ':id' => $_POST['id']));
+    $stmt->execute(array(':name' => $_POST['name'], ':comment' => $_POST['comment'], ':id' => $_POST['id']));
     // $stmt->execute(array(':name' => $_POST['name'], ':comment' => $_POST['comment']));
 
     echo "情報を更新しました。";

@@ -34,7 +34,7 @@
 
             foreach($stm as $loop){
                 if(($editNo == $loop['id'])&&($edit_pass == $loop['password'])){
-                    $stmt = $pdo->prepare('SELECT * FROM $tb_name WHERE id = :id');
+                    $stmt = $pdo->prepare("SELECT * FROM $tb_name WHERE id = :id");
 
                     $stmt->execute(array(':id' => $editNo));
 
